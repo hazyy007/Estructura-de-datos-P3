@@ -28,10 +28,10 @@ int main(int argc, char *argv[]) {
     for (i = 0; i < num_songs; i++) {
         queue_push(q, radio_getMusicIndex(r, i));
     }
-
-    while (now_playing_menu(q) == 1) {
-        queue_pop(q);
-        if (queue_isEmpty(q)) break;
+    while (!queue_isEmpty(q)) {
+        if (now_playing_menu(q) != 1) {
+            break;
+        }
     }
 
     queue_free(q);
@@ -42,16 +42,16 @@ int main(int argc, char *argv[]) {
 int now_playing_menu(Queue *q)
 {
     int option;
-    Music *m = (Music *)queue_getFront(q);
+    
+    Music *m = (Music *)queue_pop(q);
 
-    if (!m) return 2; // Salir si no hay canciones
+    if (!m) return 2;
 
     music_formatted_print(stdout, m);
     
     printf("Upcoming:\n");
-    queue_print(stdout, q, (FILE *)music_plain_print);
-    
-    printf("1. Next song\n");
+    queue_print(stdout, q, (p_queue_ele_print)music_plain_print);
+    printf("\n1. Next song\n");
     printf("2. Exit\n");
     printf("Choose an option: ");
     if (scanf("%d", &option) != 1) return 2;
