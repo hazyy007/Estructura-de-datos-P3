@@ -11,7 +11,6 @@
 #define MAX_MSC 4096
 #include "radio.h"
 #include <string.h>
-#include "stack.h"
 struct _Radio
 {
     Music *songs[MAX_MSC];            /*Array para canciones*/
@@ -305,80 +304,4 @@ Music *radio_getMusicIndex(const Radio *r, int index)
     }
 
     return r->songs[index];
-}
-
-Status radio_depthSearch(Radio *r, long from_id, long to_id)
-{
-    int i, u;
-    Music *m_origin = NULL, *current = NULL, *adj = NULL;
-    Stack *s = NULL;
-    Bool found = FALSE;
-
-    if (!r)
-    {
-        return ERROR;
-    }
-    
-
-    /*Recorremos las canciones de la radio*/
-    for (i = 0; i < r->num_music; i++) {
-        if (music_getId(r->songs[i]) == from_id) 
-        {
-            m_origin = r->songs[i];
-        }
-        /*Las ponemos not listen*/
-        music_setState(r->songs[i], NOT_LISTENED);
-    }
-
-    if (!m_origin || radio_contains(r, to_id))
-    {
-        return ERROR;
-    }
-
-    /*Imprimir cabecera*/
-    printf("From music with id: %ld", from_id);
-    printf("To music with id: %ld", to_id);
-    printf("Musci exploration path:\n");
-
-    /*Inicializamos la pila*/
-    s = stack_init();
-    if (!s)
-    {
-        return ERROR;
-    }
-
-    music_setState(m_origin, LISTENED);
-    stack_push(s, m_origin);
-
-    while (!stack_isEmpty(s) && found == FALSE) {
-        /* Extraemos el elemento en la cima de la pila */
-        current = (Music *)stack_pop(s);
-        
-        /* Imprimimos la canción actual (cada paso del camino se imprime) */
-        music_plain_print(stdout, current);
-        printf("\n");
-
-        /* Comprobamos si hemos llegado al destino */
-        if (music_getId(current) == to_id) {
-            found = TRUE;
-        } else {
-            u = music_getIndex(current); 
-            
-            /* Buscamos todos sus "vecinos" (relaciones) */
-            for (i = 0; i < r->num_music; i++) {
-                if (r->relations[u][i] == TRUE) {
-                    adj = r->songs[i];
-                    /* Si la canción vecina no ha sido visitada aún... */
-                    if (music_getState(adj) == NOT_LISTENED) {
-                        music_setState(adj, LISTENED); /* La marcamos */
-                        stack_push(s, adj);            /* Y a la pila */
-                    }
-                }
-            }
-        }
-    }
-
-    /* 6. Limpieza final */
-    stack_free(s);
-    return OK;
 }
