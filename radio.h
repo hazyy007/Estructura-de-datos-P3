@@ -12,6 +12,7 @@
 #define RADIO_H
 
 #include "music.h"
+#include "queue.h"
 
 typedef struct _Radio Radio;
 
@@ -208,5 +209,22 @@ Music *radio_getMusicIndex(const Radio *r, int index);
 * @return The function returns OK or ERROR
 **/
 Status radio_depthSearch(Radio *r, long from_id, long to_id);
+
+/**
+ * 1. ¿Cuál es la principal diferencia de comportamiento entre DFS y BFS?
+ * DFS (Depth-First Search) explora un camino lineal en profundidad hasta el final antes de 
+ * retroceder, apoyándose en una estructura LIFO (Pila).
+ * BFS (Breadth-First Search) explora de forma radial o por niveles, visitando primero todos 
+ * los vecinos directos antes de profundizar, usando una estructura FIFO (Cola).
+ *
+ * 2. ¿En qué tipos de problemas crees que funcionaría mejor un algoritmo frente al otro?
+ * - BFS es ideal para:
+ * 1) Encontrar el camino más corto en grafos no ponderados (ej. GPS básico o rutas de red).
+ * 2) Redes de contactos o "grados de separación" (ej. recomendar amigos en redes sociales).
+ * - DFS es ideal para:
+ * 1) Explorar exhaustivamente caminos hasta un tope (ej. laberintos o juegos de ajedrez).
+ * 2) Detección de ciclos o análisis de dependencias (ej. orden de compilación en Makefiles).
+ */
+Status radio_breadthSearch(Radio *r, long from_id, long to_id);
 
 #endif /* radio_H */

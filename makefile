@@ -1,32 +1,98 @@
 CC = gcc
 CFLAGS = -Wall -g
-EXE = p3_e1
+EXE1 = p3_e1
+EXE2 = p3_e2
+EXE3 = p3_e3
+
+# Opciones de Valgrind
 VALGRIND = valgrind --leak-check=full --track-origins=yes --show-leak-kinds=all
 
-all: $(EXE)
+# Regla principal para compilar todos los ejecutables
+all: $(EXE1) $(EXE2) $(EXE3)
 
-$(EXE): p3_e1.o queue.o radio.o music.o
+# -----------------------------------------------------------
+# COMPILACIÓN DE EJECUTABLES
+# -----------------------------------------------------------
+
+# --- Ejercicio 1 ---
+$(EXE1): p3_e1.o queue.o radio.o music.o
 	$(CC) $(CFLAGS) -o $@ $^
 
-p3_e1.o: p3_e1.c queue.h radio.h music.h
+p3_e1.o: p3_e1.c queue.h radio.h music.h types.h
 	$(CC) $(CFLAGS) -c p3_e1.c
+
+# --- Ejercicio 2 ---
+# NOTA: Si usas libstack.a en lugar de stack.o, cambia "stack.o" por "libstack.a" en la siguiente línea
+$(EXE2): p3_e2.o queue.o radio.o music.o
+	$(CC) $(CFLAGS) -o $@ $^
+
+p3_e2.o: p3_e2.c radio.h
+	$(CC) $(CFLAGS) -c p3_e2.c
+
+# --- Ejercicio 3 ---
+$(EXE3): p3_e3.o list.o radio.o music.o
+	$(CC) $(CFLAGS) -o $@ $^
+
+p3_e3.o: p3_e3.c list.h radio.h music.h
+	$(CC) $(CFLAGS) -c p3_e3.c
+
+list.o: list.c list.h types.h
+	$(CC) $(CFLAGS) -c list.c
+
+
+# -----------------------------------------------------------
+# COMPILACIONES COMUNES (LIBRERÍAS)
+# -----------------------------------------------------------
 
 queue.o: queue.c queue.h types.h
 	$(CC) $(CFLAGS) -c queue.c
 
-radio.o: radio.c radio.h music.h
+radio.o: radio.c radio.h music.h queue.h
 	$(CC) $(CFLAGS) -c radio.c
 
 music.o: music.c music.h types.h
 	$(CC) $(CFLAGS) -c music.c
-run: $(EXE)
-	./$(EXE) radio.txt
 
-# Regla de ejecución con Valgrind
-runv: $(EXE)
-	$(VALGRIND) ./$(EXE) radio.txt
+
+# -----------------------------------------------------------
+# REGLAS DE EJECUCIÓN NORMAL
+# -----------------------------------------------------------
+
+run1: $(EXE1)
+	./$(EXE1) radio.txt
+
+run2: $(EXE2)
+	./$(EXE2) radio_bfs.txt 1 10
+
+run3: $(EXE3)
+	./$(EXE3) radio_bfs.txt
+
+# Ejecutar todos seguidos
+run: run1 run2 run3
+
+
+# -----------------------------------------------------------
+# REGLAS DE EJECUCIÓN CON VALGRIND
+# -----------------------------------------------------------
+
+runv1: $(EXE1)
+	$(VALGRIND) ./$(EXE1) radio.txt
+
+runv2: $(EXE2)
+	$(VALGRIND) ./$(EXE2) radio_bfs.txt 1 10
+
+runv3: $(EXE3)
+	$(VALGRIND) ./$(EXE3) radio_bfs.txt
+
+# Ejecutar todos seguidos con Valgrind
+runv: runv1 runv2 runv3
+
+
+# -----------------------------------------------------------
+# LIMPIEZA
+# -----------------------------------------------------------
 
 clean:
-	rm -f *.o $(EXE)
+	rm -f *.o $(EXE1) $(EXE2) $(EXE3)
 
-.PHONY: all clean run_v
+.PHONY: all clean run run_e1 run_e2 run_e3 runv runv_e1 runv_e2 runv_e3

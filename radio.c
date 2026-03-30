@@ -305,3 +305,55 @@ Music *radio_getMusicIndex(const Radio *r, int index)
 
     return r->songs[index];
 }
+
+Status radio_breadthSearch(Radio *r, long from_id, long to_id) {
+    int i, u;
+    Music *m_origin = NULL, *current = NULL, *adj = NULL;
+    Queue *q = NULL;
+    Bool found = FALSE;
+
+    if (!r) return ERROR;
+
+    for (i = 0; i < r->num_music; i++) {
+        if (music_getId(r->songs[i]) == from_id) {
+            m_origin = r->songs[i];
+        }
+        music_setState(r->songs[i], NOT_LISTENED);
+    }
+
+    if (!m_origin || !radio_contains(r, to_id)) return ERROR;
+
+    printf("From music id: %ld\n", from_id);
+    printf("To music id: %ld\n", to_id);
+    printf("Output:\n");
+
+    q = queue_new();
+    if (!q) return ERROR;
+
+    music_setState(m_origin, LISTENED);
+    queue_push(q, m_origin);
+
+    while (!queue_isEmpty(q) && found == FALSE) {
+        current = (Music *)queue_pop(q);
+        music_plain_print(stdout, current);
+        printf("\n");
+
+        if (music_getId(current) == to_id) {
+            found = TRUE;
+        } else {
+            u = music_getIndex(current);
+            for (i = 0; i < r->num_music; i++) {
+                if (r->relations[u][i] == TRUE) {
+                    adj = r->songs[i];
+                    if (music_getState(adj) == NOT_LISTENED) {
+                        music_setState(adj, LISTENED);
+                        queue_push(q, adj);
+                    }
+                }
+            }
+        }
+    }
+
+    queue_free(q);
+    return OK;
+}
