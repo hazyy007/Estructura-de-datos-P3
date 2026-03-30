@@ -1,6 +1,12 @@
-//--------------------------------------------------------------------------
-// Queue implementation with (void *)
-//--------------------------------------------------------------------------
+/**
+ * @file queue.h
+ * @author Sergio Romera y Alejandro Dominguez
+ * @date February 2026
+ * @version 1.0
+ * @brief Library to manage the queue ADT
+ *
+ * @see 
+ */
 
 #ifndef QUEUE_H
 #define	QUEUE_H

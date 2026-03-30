@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -g
+CFLAGS = -Wall -ansi -pedantic -g
 EXE1 = p3_e1
 EXE2 = p3_e2
 EXE3 = p3_e3
@@ -61,7 +61,7 @@ run1: $(EXE1)
 	./$(EXE1) radio.txt
 
 run2: $(EXE2)
-	./$(EXE2) radio_bfs.txt 1 10
+	./$(EXE2) radio_bfs.txt 1 2
 
 run3: $(EXE3)
 	./$(EXE3) radio_bfs.txt
@@ -93,5 +93,3 @@ runv: runv1 runv2 runv3
 
 clean:
 	rm -f *.o $(EXE1) $(EXE2) $(EXE3)
-
-.PHONY: all clean run run_e1 run_e2 run_e3 runv runv_e1 runv_e2 runv_e3

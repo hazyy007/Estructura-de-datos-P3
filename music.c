@@ -15,11 +15,8 @@
 #include <stdlib.h>
 #include "music.h"
 
-/* START [STR_LENGTH] */
 #define STR_LENGTH 64
-/* END [STR_LENGTH] */
 
-/* START [Music] */
 struct _Music
 {
   long id;
@@ -29,7 +26,6 @@ struct _Music
   State state;
   int index;  
 };
-/* END [Music] */
 
 Music *music_init()
 {
@@ -82,7 +78,7 @@ Music *music_initFromString(char *descr) {
 
   if (!descr) return NULL;
 
-  /* Creamos una copia para no destrozar el string original con strtok/punteros */
+  /* Creamos una copia*/
   buffer = (char*)malloc(strlen(descr) + 1);
   if (!buffer) return NULL;
   strcpy(buffer, descr);
@@ -184,7 +180,7 @@ State music_getState(const Music *m)
 }
 
 Status music_setId(Music *m, const long id)
-{ /**a partir de aqui sergio */
+{ 
   if (!m || id < 0)
   {
     return ERROR;

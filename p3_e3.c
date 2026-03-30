@@ -4,11 +4,18 @@
 #include "radio.h"
 #include "music.h"
 
+int print_music(FILE *f, const void *m)
+{
+    int ret = music_plain_print(f, m);
+    fprintf(f, "\n");
+    return ret;
+}
+
 int main(int argc, char *argv[]) {
     Radio *r;
     List *l;
     FILE *f;
-    int i, num_songs;
+    int i, num_songs, limit;
     Music *m;
 
     if (argc < 2) {
@@ -37,12 +44,15 @@ int main(int argc, char *argv[]) {
         }
     }
 
+    list_print(stdout, l, print_music);
+    printf("\n");
+
     printf("Finished inserting. Now we extract from the beginning:\n");
-    int limit = num_songs / 2; 
+    limit = num_songs / 2; 
     for (i = 0; i < limit; i++) {
         m = (Music *)list_popFront(l);
         music_plain_print(stdout, m);
-        printf(" ");
+        printf(" \n");
     }
     printf("\n\n");
 
@@ -50,7 +60,7 @@ int main(int argc, char *argv[]) {
     while (!list_isEmpty(l)) {
         m = (Music *)list_popBack(l);
         music_plain_print(stdout, m);
-        printf(" ");
+        printf(" \n");
     }
     printf("\n");
 

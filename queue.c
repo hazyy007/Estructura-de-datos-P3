@@ -11,13 +11,14 @@ struct _Queue {
 };
 
 Queue *queue_new() {
+    int i;
     Queue *q = (Queue *)malloc(sizeof(Queue));
     if (!q) return NULL;
 
     q->front = &(q->data[0]);
     q->rear = &(q->data[0]);
 
-    for (int i = 0; i < MAX_QUEUE; i++) {
+    for (i = 0; i < MAX_QUEUE; i++) {
         q->data[i] = NULL;
     }
 
@@ -73,9 +74,10 @@ size_t queue_size(const Queue *q) {
 
 int queue_print(FILE *fp, const Queue *q, p_queue_ele_print f) {
     int count = 0;
+    void **ptr;
     if (!fp || !q || !f) return -1;
 
-    for (void **ptr = q->front; ptr < q->rear; ptr++) {
+    for (ptr = q->front; ptr < q->rear; ptr++) {
         int res = f(fp, *ptr);
         if (res < 0) return -1;
         count += res;

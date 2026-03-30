@@ -67,7 +67,7 @@ Status radio_newMusic(Radio *r, char *desc) {
     for (i = 0; i < r->num_music; i++) {
         if (music_getId(new_music) == music_getId(r->songs[i])) {
             music_free(new_music);
-            return OK; /* Ya estaba, no es un error */
+            return OK;
         }
     }
 
@@ -77,8 +77,7 @@ Status radio_newMusic(Radio *r, char *desc) {
         return ERROR;
     }
 
-    music_setIndex(new_music, r->num_music); /* Asignar el índice actual */
-    /* Insertar al final del contador actual */
+    music_setIndex(new_music, r->num_music);
     r->songs[r->num_music] = new_music;
     r->num_music++; 
 
@@ -228,7 +227,6 @@ long *radio_getRelationsFromId(const Radio *r, long id)
             contador++;
     }
 
-    /* Reserva espacio para los IDs + un terminador -1 para saber cuándo parar */
     array = (long *)calloc(contador + 1, sizeof(long));
     if (!array)
         return NULL;
@@ -240,7 +238,7 @@ long *radio_getRelationsFromId(const Radio *r, long id)
             array[k++] = music_getId(r->songs[j]);
         }
     }
-    array[k] = -1; /* Marcador de final de array */
+    array[k] = -1; 
     return array;
 }
 
@@ -270,10 +268,9 @@ Status radio_readFromFile(FILE *fin, Radio *r) {
 
     if (!fin || !r) return ERROR;
 
-    /* 1. Leer cuántas canciones vienen (sin tocar r->num_music directamente) */
+    /* 1. Leer cuántas canciones vienen */
     if (fscanf(fin, "%d", &total_a_leer) != 1) return ERROR;
     
-    /* LIMPIEZA: saltar el resto de la línea del número */
     fgets(desc, sizeof(desc), fin); 
 
     /* 2. Leer descripciones */
@@ -288,7 +285,6 @@ Status radio_readFromFile(FILE *fin, Radio *r) {
     }
 
     /* 3. Leer relaciones */
-    /* fscanf es inteligente: se salta cualquier espacio o salto de línea */
     while (fscanf(fin, "%ld %ld", &id_orig, &id_dest) == 2) {
         radio_newRelation(r, id_orig, id_dest);
     }
@@ -335,7 +331,7 @@ Status radio_breadthSearch(Radio *r, long from_id, long to_id) {
         if (music_getId(current) == to_id) {
             found = TRUE;
         } else {
-            u = music_getIndex(current); // CRUCIAL: usar el índice
+            u = music_getIndex(current);
             for (i = 0; i < r->num_music; i++) {
                 if (r->relations[u][i] == TRUE) {
                     adj = r->songs[i];
@@ -370,19 +366,18 @@ Status radio_depthSearch(Radio *r, long from_id, long to_id)
         {
             m_origin = r->songs[i];
         }
-        /*Las ponemos not listen*/
         music_setState(r->songs[i], NOT_LISTENED);
     }
 
-    if (!m_origin || radio_contains(r, to_id))
+    if (!m_origin || !radio_contains(r, to_id))
     {
         return ERROR;
     }
 
     /*Imprimir cabecera*/
-    printf("From music with id: %ld", from_id);
-    printf("To music with id: %ld", to_id);
-    printf("Musci exploration path:\n");
+    printf("From music with id: %ld\n", from_id);
+    printf("To music with id: %ld\n", to_id);
+    printf("Music exploration path:\n");
 
     /*Inicializamos la pila*/
     s = stack_init();
@@ -398,7 +393,7 @@ Status radio_depthSearch(Radio *r, long from_id, long to_id)
         /* Extraemos el elemento en la cima de la pila */
         current = (Music *)stack_pop(s);
         
-        /* Imprimimos la canción actual (cada paso del camino se imprime) */
+        /* Imprimimos la canción actual*/
         music_plain_print(stdout, current);
         printf("\n");
 
@@ -407,22 +402,19 @@ Status radio_depthSearch(Radio *r, long from_id, long to_id)
             found = TRUE;
         } else {
             u = music_getIndex(current); 
-            
-            /* Buscamos todos sus "vecinos" (relaciones) */
             for (i = 0; i < r->num_music; i++) {
                 if (r->relations[u][i] == TRUE) {
                     adj = r->songs[i];
-                    /* Si la canción vecina no ha sido visitada aún... */
                     if (music_getState(adj) == NOT_LISTENED) {
-                        music_setState(adj, LISTENED); /* La marcamos */
-                        stack_push(s, adj);            /* Y a la pila */
+                        music_setState(adj, LISTENED);
+                        stack_push(s, adj);
                     }
                 }
             }
         }
     }
 
-    /* 6. Limpieza final */
+    /* Limpieza final */
     stack_free(s);
     return OK;
 }
