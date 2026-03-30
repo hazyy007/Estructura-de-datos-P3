@@ -3,12 +3,14 @@ CFLAGS = -Wall -ansi -pedantic -g
 EXE1 = p3_e1
 EXE2 = p3_e2
 EXE3 = p3_e3
+EXE1S = p3_e1s
+EXE2S = p3_e2s
 
 # Opciones de Valgrind
 VALGRIND = valgrind --leak-check=full --track-origins=yes --show-leak-kinds=all
 
 # Regla principal para compilar todos los ejecutables
-all: $(EXE1) $(EXE2) $(EXE3)
+all: $(EXE1) $(EXE2) $(EXE3) $(EXE1S) $(EXE2S)
 
 # -----------------------------------------------------------
 # COMPILACIÓN DE EJECUTABLES
@@ -35,6 +37,14 @@ $(EXE3): p3_e3.o list.o radio.o music.o libstack.a queue.o
 p3_e3.o: p3_e3.c list.h radio.h music.h stack.h
 	$(CC) $(CFLAGS) -c p3_e3.c
 
+# Ejecutable 1 Variante List
+$(EXE1S): p3_e1.o queueList.o radio.o music.o libstack.a list.o
+	$(CC) $(CFLAGS) -o $@ $^
+
+# Ejecutable 2 Variante List
+$(EXE2S): p3_e2.o queueList.o radio.o music.o libstack.a list.o
+	$(CC) $(CFLAGS) -o $@ $^
+
 
 # -----------------------------------------------------------
 # COMPILACIONES COMUNES (LIBRERÍAS)
@@ -52,6 +62,8 @@ music.o: music.c music.h types.h
 list.o: list.c list.h types.h
 	$(CC) $(CFLAGS) -c list.c
 
+queueList.o: queueList.c queue.h list.h types.h
+	$(CC) $(CFLAGS) -c queueList.c
 
 # -----------------------------------------------------------
 # REGLAS DE EJECUCIÓN NORMAL
@@ -68,6 +80,9 @@ run3: $(EXE3)
 
 # Ejecutar todos seguidos
 run: run1 run2 run3
+runs: $(EXE1S) $(EXE2S)
+	./$(EXE1S) radio.txt
+	./$(EXE2S) radio_bfs.txt 1 2
 
 
 # -----------------------------------------------------------
@@ -92,4 +107,4 @@ runv: runv1 runv2 runv3
 # -----------------------------------------------------------
 
 clean:
-	rm -f *.o $(EXE1) $(EXE2) $(EXE3)
+	rm -f *.o $(EXE1) $(EXE2) $(EXE3) $(EXE1S) $(EXE2S)
