@@ -38,7 +38,8 @@ int main(int argc, char *argv[]) {
     }
 
     printf("Finished inserting. Now we extract from the beginning:\n");
-    for (i = 0; i < num_songs / 2; i++) {
+    int limit = num_songs / 2; 
+    for (i = 0; i < limit; i++) {
         m = (Music *)list_popFront(l);
         music_plain_print(stdout, m);
         printf(" ");

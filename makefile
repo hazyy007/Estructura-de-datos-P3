@@ -15,29 +15,25 @@ all: $(EXE1) $(EXE2) $(EXE3)
 # -----------------------------------------------------------
 
 # --- Ejercicio 1 ---
-$(EXE1): p3_e1.o queue.o radio.o music.o
+$(EXE1): p3_e1.o queue.o radio.o music.o libstack.a
 	$(CC) $(CFLAGS) -o $@ $^
 
-p3_e1.o: p3_e1.c queue.h radio.h music.h types.h
+p3_e1.o: p3_e1.c queue.h radio.h music.h types.h stack.h
 	$(CC) $(CFLAGS) -c p3_e1.c
 
 # --- Ejercicio 2 ---
-# NOTA: Si usas libstack.a en lugar de stack.o, cambia "stack.o" por "libstack.a" en la siguiente línea
-$(EXE2): p3_e2.o queue.o radio.o music.o
+$(EXE2): p3_e2.o queue.o radio.o music.o libstack.a
 	$(CC) $(CFLAGS) -o $@ $^
 
-p3_e2.o: p3_e2.c radio.h
+p3_e2.o: p3_e2.c radio.h stack.h
 	$(CC) $(CFLAGS) -c p3_e2.c
 
 # --- Ejercicio 3 ---
-$(EXE3): p3_e3.o list.o radio.o music.o
+$(EXE3): p3_e3.o list.o radio.o music.o libstack.a queue.o
 	$(CC) $(CFLAGS) -o $@ $^
 
-p3_e3.o: p3_e3.c list.h radio.h music.h
+p3_e3.o: p3_e3.c list.h radio.h music.h stack.h
 	$(CC) $(CFLAGS) -c p3_e3.c
-
-list.o: list.c list.h types.h
-	$(CC) $(CFLAGS) -c list.c
 
 
 # -----------------------------------------------------------
@@ -52,6 +48,9 @@ radio.o: radio.c radio.h music.h queue.h
 
 music.o: music.c music.h types.h
 	$(CC) $(CFLAGS) -c music.c
+
+list.o: list.c list.h types.h
+	$(CC) $(CFLAGS) -c list.c
 
 
 # -----------------------------------------------------------

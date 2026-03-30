@@ -13,6 +13,7 @@
 
 #include "music.h"
 #include "queue.h"
+#include "stack.h"
 
 typedef struct _Radio Radio;
 

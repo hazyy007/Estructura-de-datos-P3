@@ -315,25 +315,19 @@ Status radio_breadthSearch(Radio *r, long from_id, long to_id) {
     if (!r) return ERROR;
 
     for (i = 0; i < r->num_music; i++) {
-        if (music_getId(r->songs[i]) == from_id) {
-            m_origin = r->songs[i];
-        }
+        if (music_getId(r->songs[i]) == from_id) m_origin = r->songs[i];
         music_setState(r->songs[i], NOT_LISTENED);
     }
 
     if (!m_origin || !radio_contains(r, to_id)) return ERROR;
 
-    printf("From music id: %ld\n", from_id);
-    printf("To music id: %ld\n", to_id);
-    printf("Output:\n");
+    printf("From music id: %ld\nTo music id: %ld\nOutput:\n", from_id, to_id);
 
     q = queue_new();
-    if (!q) return ERROR;
-
     music_setState(m_origin, LISTENED);
     queue_push(q, m_origin);
 
-    while (!queue_isEmpty(q) && found == FALSE) {
+    while (!queue_isEmpty(q) && !found) {
         current = (Music *)queue_pop(q);
         music_plain_print(stdout, current);
         printf("\n");
@@ -341,7 +335,7 @@ Status radio_breadthSearch(Radio *r, long from_id, long to_id) {
         if (music_getId(current) == to_id) {
             found = TRUE;
         } else {
-            u = music_getIndex(current);
+            u = music_getIndex(current); // CRUCIAL: usar el índice
             for (i = 0; i < r->num_music; i++) {
                 if (r->relations[u][i] == TRUE) {
                     adj = r->songs[i];
@@ -353,7 +347,82 @@ Status radio_breadthSearch(Radio *r, long from_id, long to_id) {
             }
         }
     }
-
     queue_free(q);
+    return OK;
+}
+
+Status radio_depthSearch(Radio *r, long from_id, long to_id)
+{
+    int i, u;
+    Music *m_origin = NULL, *current = NULL, *adj = NULL;
+    Stack *s = NULL;
+    Bool found = FALSE;
+
+    if (!r)
+    {
+        return ERROR;
+    }
+    
+
+    /*Recorremos las canciones de la radio*/
+    for (i = 0; i < r->num_music; i++) {
+        if (music_getId(r->songs[i]) == from_id) 
+        {
+            m_origin = r->songs[i];
+        }
+        /*Las ponemos not listen*/
+        music_setState(r->songs[i], NOT_LISTENED);
+    }
+
+    if (!m_origin || radio_contains(r, to_id))
+    {
+        return ERROR;
+    }
+
+    /*Imprimir cabecera*/
+    printf("From music with id: %ld", from_id);
+    printf("To music with id: %ld", to_id);
+    printf("Musci exploration path:\n");
+
+    /*Inicializamos la pila*/
+    s = stack_init();
+    if (!s)
+    {
+        return ERROR;
+    }
+
+    music_setState(m_origin, LISTENED);
+    stack_push(s, m_origin);
+
+    while (!stack_isEmpty(s) && found == FALSE) {
+        /* Extraemos el elemento en la cima de la pila */
+        current = (Music *)stack_pop(s);
+        
+        /* Imprimimos la canción actual (cada paso del camino se imprime) */
+        music_plain_print(stdout, current);
+        printf("\n");
+
+        /* Comprobamos si hemos llegado al destino */
+        if (music_getId(current) == to_id) {
+            found = TRUE;
+        } else {
+            u = music_getIndex(current); 
+            
+            /* Buscamos todos sus "vecinos" (relaciones) */
+            for (i = 0; i < r->num_music; i++) {
+                if (r->relations[u][i] == TRUE) {
+                    adj = r->songs[i];
+                    /* Si la canción vecina no ha sido visitada aún... */
+                    if (music_getState(adj) == NOT_LISTENED) {
+                        music_setState(adj, LISTENED); /* La marcamos */
+                        stack_push(s, adj);            /* Y a la pila */
+                    }
+                }
+            }
+        }
+    }
+
+    /* 6. Limpieza final */
+    stack_free(s);
     return OK;
 }
