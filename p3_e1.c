@@ -16,8 +16,8 @@ int main(int argc, char *argv[]) {
 
     r = radio_init();
     f = fopen(argv[1], "r");
-    if (radio_readFromFile(f, r) == ERROR) {
-        fclose(f);
+    if (!f || radio_readFromFile(f, r) == ERROR) {
+        if (f) fclose(f);
         radio_free(r);
         return EXIT_FAILURE;
     }

@@ -26,7 +26,7 @@ Queue *queue_new() {
 }
 
 void queue_free(Queue *q) {
-    if (!q) free(q);
+    if (q) free(q);
 }
 
 Bool queue_isEmpty(const Queue *q) {
