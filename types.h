@@ -29,6 +29,6 @@ typedef enum {
     OK=1     /*!< OK output */
 } Status;
 
-#define MAX_QUEUE 100 /*!< Maximum number of elements in a queue */
+#define MAX_QUEUE 8 /*!< Maximum number of elements in a queue */
 
 #endif /* TYPES_H_ */
