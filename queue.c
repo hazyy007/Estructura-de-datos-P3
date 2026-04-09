@@ -37,7 +37,6 @@ Bool queue_isEmpty(const Queue *q) {
 
 Bool queue_isFull(const Queue *q) {
     if (!q) return TRUE;
-    /* En array circular dejando 1 hueco libre, esta llena si rear + 1 "alcanza" a front*/
     return (((q->rear + 1) % MAX_QUEUE) == q->front) ? TRUE : FALSE;
 }
 
